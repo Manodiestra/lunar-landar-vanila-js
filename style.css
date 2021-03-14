@@ -1,0 +1,82 @@
+#body {
+  background-color: black;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  color: white;
+  margin: 0;
+}
+#top {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+}
+#title {
+  display: flex;
+  flex: 5;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+  color: green;
+}
+#pauseMenu {
+  display: none;
+  background-color: black;
+  border-color: #f01111;
+  border-width: 5px;
+  border-style: solid;
+  justify-content: center;
+}
+#container {
+  padding-top: 10px;
+  padding-bottom: 160px;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+}
+#canvas {
+  border-width: 0;
+  display: flex;
+  flex: 2;
+  width: auto;
+  height: 550px;
+}
+.sidePannel {
+  display: flex;
+  flex: 2;
+  flex-direction: column;
+  padding-left: 64px;
+  padding-right: 64px;
+}
+.menuWrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
+}
+.label {
+  display: flex;
+  flex: 1;
+  text-align: center;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: center;
+}
+.valueStyle {
+  background-color: black;
+  display: flex;
+  flex: 1;
+  border-color: #f01111;
+  border-width: 5px;
+  border-style: solid;
+  text-align: center;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: center;
+}
+span.clear {
+  clear: left;
+  display: block;
+  margin: 0;
+  height: 0;
+}
