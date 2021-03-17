@@ -50,10 +50,16 @@ MyGame.main = (function(graphics, input) {
   });
   // Process the registered input handlers here.
   function processInput(elapsedTime) {
-    myKeyboard.update(elapsedTime);
+    if (!gameOver) {
+      myKeyboard.update(elapsedTime);
+    }
   }
   // Update function
   function update(elapsedTime) {
+    if (lander.getCenter().x <= 0 || lander.getCenter().x >= canvas.width
+      || lander.getCenter().y <= 0 || lander.getCenter().y >= canvas.height) {
+      gameOver = true;
+    }
     if (!gameOver) {
       screenTimeValue.innerText = Math.floor(
         (performance.now() - startTime) / 1000) + ' sec';

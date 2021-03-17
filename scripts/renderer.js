@@ -73,12 +73,13 @@ MyGame.graphics = (function() {
         * thrustForce * Math.cos(spec.rotation);
       spec.horizontalVector += (elapsedTime / 1000) 
         * thrustForce * Math.sin(spec.rotation);
-      console.log('VERT', spec.verticalVector);
-      console.log('HORI', spec.horizontalVector);
     }
     that.gravity = function(elapsedTime) {
       spec.verticalVector -= (elapsedTime / 1000)
         * gravity;
+    }
+    that.getCenter = function() {
+      return JSON.parse(JSON.stringify(spec.center));
     }
     that.draw = function() {
       if (ready) {
