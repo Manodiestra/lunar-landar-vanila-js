@@ -54,6 +54,8 @@ MyGame.main = (function(graphics, input) {
         (performance.now() - startTime) / 1000) + ' sec';
       fuelDisplay.innerText = fuel;
       lander.gravity(elapsedTime);
+      lander.horizontalMove(elapsedTime);
+      lander.verticalMove(elapsedTime);
     }
   }
   // Render function
