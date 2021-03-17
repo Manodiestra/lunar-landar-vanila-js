@@ -3,8 +3,8 @@ let startTime = JSON.parse(JSON.stringify(previousTimeStamp));
 let gameLoaded = false;
 const canvas = document.getElementById('canvas');
 const gameDifficulty = {
-  '1': 5,
-  '2': 7,
+  '1': 1,
+  '2': 2,
 };
 let selectedDifficulty = '1';
 let difficulty = gameDifficulty[selectedDifficulty];
@@ -12,7 +12,7 @@ let fuel = 100;
 let screenTimeValue = document.getElementById('timeValue');
 let scoreBoard = document.getElementById('leaderBoard');
 let allScores = [];
-let scoreDisplay = document.getElementById('scoreValue');
+let fuelDisplay = document.getElementById('fuelValue');
 let gameOver = false;
 
 // Get images to render
@@ -58,6 +58,7 @@ function gameLoop() {
   timeStamp = performance.now();
   if (!gameLoaded) {
     // initial game settup
+    makeScoreBoard();
   }
   let elapsedTime = timeStamp - previousTimeStamp;
   previousTimeStamp = timeStamp;

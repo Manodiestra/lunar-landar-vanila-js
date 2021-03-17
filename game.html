@@ -2,7 +2,7 @@
 <html lang = "en-US">
 <head>
   <meta charset = "UTF-8">
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="./styles/style.css"/>
   <title>Maze</title>
 </head>
 <body id="body">
@@ -25,13 +25,15 @@
     <div class="sidePannel">
       <div id="scoreWrapper" class="menuWrapper">
         <h3 class="label">Fuel:</h3>
-        <h3 id="scoreValue" class="valueStyle">0</h3>
+        <h3 id="fuelValue" class="valueStyle">0</h3>
       </div>
     </div>
   </div>
   <script>
     var MyGame = {};
   </script>
-  <script src = "driver.js"></script>
+  <script src="./scripts/input.js"></script>
+  <script src="./scripts/renderer.js"></script>
+  <script src="./scripts/driver.js"></script>
 </body>
 </html>
