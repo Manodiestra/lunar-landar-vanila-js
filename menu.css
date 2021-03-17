@@ -1,0 +1,55 @@
+@font-face {
+  font-family: 'Xirod';
+  src: url('./assets/xirod/xirod.ttf');
+}
+#body {
+  background-color: black;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  color: white;
+  margin: 0;
+  font-family: 'Xirod';
+}
+#top {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+}
+#title {
+  display: flex;
+  flex: 5;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+  color: purple;
+}
+#menu {
+  padding-top: 10px;
+  padding-bottom: 160px;
+  margin-left: 20%;
+  margin-right: 20%;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu_item {
+  display: flex;
+  flex: 1;
+  margin: 16px;
+  padding: 16px;
+  border-color: #f01111;
+  border-width: 5px;
+  border-style: solid;
+  text-align: center;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: center;
+}
+.menu_item:hover {
+  color: black;
+  background-color: red;
+  border-color: purple;
+}
+.text {
+  color: purple;
+}

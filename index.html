@@ -2,36 +2,26 @@
 <html lang = "en-US">
 <head>
   <meta charset = "UTF-8">
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="menu.css"/>
   <title>Maze</title>
 </head>
 <body id="body">
   <div id="top">
     <h1 id="title">The Game</h1>
   </div>
-  <div id="pauseMenu"></div>
-  <div id="container">
-    <div class="sidePannel">
-      <div id="timeWrapper" class="menuWrapper">
-        <h3 class="label">Elapsed Time:</h3>
-        <h3 id="timeValue" class="valueStyle">0 sec</h3>
-      </div>
-      <div class="menuWrapper">
-        <h3 class="label">Score Board</h3>
-        <div id="leaderBoard"></div>
-      </div>
+  <div id="menu">
+    <div class="menu_item" onclick="location.href='game.html'">
+      Start a new game
     </div>
-    <canvas id="canvas" width="1000" height="1000"></canvas>
-    <div class="sidePannel">
-      <div id="scoreWrapper" class="menuWrapper">
-        <h3 class="label">Fuel:</h3>
-        <h3 id="scoreValue" class="valueStyle">0</h3>
-      </div>
+    <div class="menu_item">
+      View high scores
+    </div>
+    <div class="menu_item">
+      Customize controls
+    </div>
+    <div class="menu_item" onclick="location.href='credits.html'">
+      View credits
     </div>
   </div>
-  <script>
-    var MyGame = {};
-  </script>
-  <script src = "driver.js"></script>
 </body>
 </html>
