@@ -53,7 +53,7 @@ MyGame.main = (function(graphics, input) {
       screenTimeValue.innerText = Math.floor(
         (performance.now() - startTime) / 1000) + ' sec';
       fuelDisplay.innerText = fuel;
-
+      lander.gravity(elapsedTime);
     }
   }
   // Render function
@@ -78,7 +78,7 @@ MyGame.main = (function(graphics, input) {
     requestAnimationFrame(gameLoop);
   };
   // Create the keyboard input handler
-  myKeyboard.registerCommand('w', lander.moveUp);
+  myKeyboard.registerCommand('w', lander.thrust);
   myKeyboard.registerCommand('q', lander.rotateLeft);
   myKeyboard.registerCommand('e', lander.rotateRight);
   // INICIATE!

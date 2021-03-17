@@ -3,6 +3,8 @@
 // ------------------------------------------------------------------
 MyGame.graphics = (function() {
   'use strict';
+  const thrustForce = 3;
+  const gravity = 1;
   let canvas = document.getElementById('canvas');
   let context = canvas.getContext('2d');
   //------------------------------------------------------------------
@@ -44,21 +46,29 @@ MyGame.graphics = (function() {
       spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
     };
 
-    that.moveLeft = function(elapsedTime) {
-      spec.center.x -= spec.moveRate * (elapsedTime / 1000);
+    that.horizontalMove = function(elapsedTime) {
+      spec.center.x += spec.moveRate 
+        * (elapsedTime / 1000) * spec.horizontalVector;
+    };
+    
+    that.verticalMove = function(elapsedTime) {
+      spec.center.y -= spec.moveRate 
+        * (elapsedTime / 1000) * spec.verticalVector;
     };
 
-    that.moveRight = function(elapsedTime) {
-      spec.center.x += spec.moveRate * (elapsedTime / 1000);
-    };
-    
-    that.moveUp = function(elapsedTime) {
-      spec.center.y -= spec.moveRate * (elapsedTime / 1000);
-    };
-    
-    that.moveDown = function(elapsedTime) {
-      spec.center.y += spec.moveRate * (elapsedTime / 1000);
-    };
+    that.thrust = function(elapsedTime) {
+      spec.verticalVector += (elapsedTime / 1000) 
+        * thrustForce * Math.cos(spec.rotation);
+      spec.horizontalVector += (elapsedTime / 1000) 
+        * thrustForce * Math.sin(spec.rotation);
+      console.log('VERT', spec.verticalVector);
+      console.log('HORI', spec.horizontalVector);
+    }
+
+    that.gravity = function(elapsedTime) {
+      spec.verticalVector -= (elapsedTime / 1000)
+        * gravity;
+    }
 
     that.draw = function() {
       if (ready) {
