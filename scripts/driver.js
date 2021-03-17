@@ -31,13 +31,17 @@ MyGame.main = (function(graphics, input) {
   }
 
   let myKeyboard = input.Keyboard();
-  let lander = graphics.Texture( {
-    image : 'assets/lander.png',
-    center : { x : 100, y : 100 },
-    width : 80, height : 80,
-    rotation : 0,
-    moveRate : 200,            // pixels per second
-    rotateRate : 3.14159    // Radians per second
+  let lander = graphics.Texture({
+    image: 'assets/lander.png',
+    center: {x: 100, y: 100},
+    width: 80,
+    height: 80,
+    rotation: 0,
+    moveRate: 200,            // pixels per second
+    rotateRate: 3.14159,    // Radians per second
+    verticalVector: 0,
+    horizontalVector: 0,
+    timePassed: 0,
   });
   // Process the registered input handlers here.
   function processInput(elapsedTime) {
@@ -48,6 +52,8 @@ MyGame.main = (function(graphics, input) {
     if (!gameOver) {
       screenTimeValue.innerText = Math.floor(
         (performance.now() - startTime) / 1000) + ' sec';
+      fuelDisplay.innerText = fuel;
+
     }
   }
   // Render function
@@ -57,18 +63,22 @@ MyGame.main = (function(graphics, input) {
   }
   // the Game Loop
   function gameLoop(time) {
+    if (!gameLoaded) {
+      // initial game settup
+      makeScoreBoard();
+    }
     let elapsedTime = time - lastTimeStamp;
     lastTimeStamp = time;
     processInput(elapsedTime);
     update(elapsedTime);
     render();
+    if (!gameLoaded) {
+      gameLoaded = true;
+    }
     requestAnimationFrame(gameLoop);
   };
   // Create the keyboard input handler
-  myKeyboard.registerCommand('a', lander.moveLeft);
-  myKeyboard.registerCommand('d', lander.moveRight);
   myKeyboard.registerCommand('w', lander.moveUp);
-  myKeyboard.registerCommand('s', lander.moveDown);
   myKeyboard.registerCommand('q', lander.rotateLeft);
   myKeyboard.registerCommand('e', lander.rotateRight);
   // INICIATE!

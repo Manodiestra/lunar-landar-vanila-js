@@ -11,7 +11,7 @@ let difficulty = gameDifficulty[selectedDifficulty];
 let fuel = 100;
 let screenTimeValue = document.getElementById('timeValue');
 let scoreBoard = document.getElementById('leaderBoard');
-let allScores = [];
+let allScores = [82, 22];
 let fuelDisplay = document.getElementById('fuelValue');
 let gameOver = false;
 
@@ -28,6 +28,7 @@ let gameOver = false;
 
 
 function makeScoreBoard() {
+  console.log('MAKE BOARD');
   scoreBoard.innerHTML = null;
   allScores.sort(function(a, b){return b-a});
   let number = allScores.length;
@@ -67,7 +68,7 @@ function gameLoop() {
   render();
 
   if (!gameLoaded) {
-    mazeLoaded = true;
+    gameLoaded = true;
   }
   requestAnimationFrame(gameLoop);
 }

@@ -74,6 +74,13 @@
   vertical-align: middle;
   justify-content: center;
 }
+#leaderBoard {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
 span.clear {
   clear: left;
   display: block;
