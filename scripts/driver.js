@@ -25,12 +25,18 @@ MyGame.main = (function(graphics, input) {
       number = 5;
     }
     for (let i = 0; i < number; i++) {
-      console.log("<h3 class='valueStyle'>" + allScores[i] + "</h3>");
       scoreBoard.innerHTML += "<h3 class='valueStyle'>" + allScores[i] + "</h3>";
     }
   }
 
   let myKeyboard = input.Keyboard();
+
+  let backDrop = graphics.BackgroundImage({
+    image: 'assets/moon_space.jpeg',
+    start_x: 1,
+    start_y: 1,
+  })
+
   let lander = graphics.Texture({
     image: 'assets/lander.png',
     center: {x: 100, y: 100},
@@ -41,7 +47,6 @@ MyGame.main = (function(graphics, input) {
     rotateRate: 3.14159,    // Radians per second
     verticalVector: 0,
     horizontalVector: 0,
-    timePassed: 0,
   });
   // Process the registered input handlers here.
   function processInput(elapsedTime) {
@@ -61,6 +66,7 @@ MyGame.main = (function(graphics, input) {
   // Render function
   function render() {
     graphics.clear();
+    backDrop.draw();
     lander.draw();
   }
   // the Game Loop

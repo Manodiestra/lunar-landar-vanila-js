@@ -35,9 +35,7 @@
 }
 #canvas {
   border-width: 0;
-  padding: 4px;
-  background-image: url('../assets/moon_space.jpeg');
-  background-repeat: no-repeat;
+  padding: 0;
   display: flex;
   flex: 2;
   width: auto;

@@ -3,14 +3,14 @@
 // ------------------------------------------------------------------
 MyGame.graphics = (function() {
   'use strict';
-  const thrustForce = 3;
+  const thrustForce = 2;
   const gravity = 1;
   let canvas = document.getElementById('canvas');
   let context = canvas.getContext('2d');
-  //------------------------------------------------------------------
-  // Place a 'clear' function on the Canvas prototype, this makes it a part
-  // of the canvas, rather than making a function that calls and does it.
-  //------------------------------------------------------------------
+  let backgroundImage = new Image();
+  backgroundImage.src = '/home/mano/school/cs5410/hw3/assets/moon_space.jpeg';
+  context.drawImage(backgroundImage, 1, 1);
+  // Clear function
   CanvasRenderingContext2D.prototype.clear = function() {
     this.save();
     this.setTransform(1, 0, 0, 1, 0, 0);
@@ -23,39 +23,51 @@ MyGame.graphics = (function() {
   function clear() {
     context.clear();
   }
-  //------------------------------------------------------------------
-  // This is used to create a texture function that can be used by client
-  // code for rendering.
-  //------------------------------------------------------------------
+  // Background image
+  function BackgroundImage(spec) {
+    let that = {};
+    let ready = false;
+    let image = new Image();
+    image.onload = function() {
+      ready = true;
+    }
+    image.src = spec.image;
+    that.draw = function() {
+      if (ready) {
+        context.save();
+        context.drawImage(
+          image, 
+          spec.start_x, 
+          spec.start_y,
+        );
+        context.restore();
+      }
+    };
+    return that;
+  }
+  // Texture object
   function Texture(spec) {
     let that = {};
     let ready = false;
     let image = new Image();
-    // Load the image, set the ready flag once it is loaded so that
-    // rendering can begin.
     image.onload = function() { 
       ready = true;
     };
     image.src = spec.image;
-
     that.rotateRight = function(elapsedTime) {
       spec.rotation += spec.rotateRate * (elapsedTime / 1000);
     };
-
     that.rotateLeft = function(elapsedTime) {
       spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
     };
-
     that.horizontalMove = function(elapsedTime) {
       spec.center.x += spec.moveRate 
         * (elapsedTime / 1000) * spec.horizontalVector;
     };
-    
     that.verticalMove = function(elapsedTime) {
       spec.center.y -= spec.moveRate 
         * (elapsedTime / 1000) * spec.verticalVector;
     };
-
     that.thrust = function(elapsedTime) {
       spec.verticalVector += (elapsedTime / 1000) 
         * thrustForce * Math.cos(spec.rotation);
@@ -64,12 +76,10 @@ MyGame.graphics = (function() {
       console.log('VERT', spec.verticalVector);
       console.log('HORI', spec.horizontalVector);
     }
-
     that.gravity = function(elapsedTime) {
       spec.verticalVector -= (elapsedTime / 1000)
         * gravity;
     }
-
     that.draw = function() {
       if (ready) {
         context.save();
@@ -88,8 +98,9 @@ MyGame.graphics = (function() {
     return that;
   }
   return {
-    clear : clear,
-    Texture : Texture,
+    clear,
+    Texture,
+    BackgroundImage,
   };
 }());
 
