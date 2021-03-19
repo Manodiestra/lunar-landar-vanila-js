@@ -2,6 +2,7 @@
 <html lang = "en-US">
 <head>
   <meta charset = "UTF-8">
+  <link rel="stylesheet" href="./styles/style.css"/>
   <link rel="stylesheet" href="./styles/menu.css"/>
   <title>High Scores</title>
   <script>
@@ -16,8 +17,11 @@
     <div class="menu_item" onclick="location.href='index.html'">
       Main Menu
     </div>
-    <div id="leaderBoard" class="menu_item"></div>
+    <div id="leaderBoard"></div>
   </div>
   <script src="./scripts/storage.js"></script>
+  <script>
+    MyGame.storage.reportScores();
+  </script>
 </body>
 </html>

@@ -53,24 +53,6 @@
   padding-left: 64px;
   padding-right: 64px;
 }
-.menu_button {
-  display: flex;
-  flex: 1;
-  margin: 16px;
-  padding: 16px;
-  border-color: #f01111;
-  border-width: 5px;
-  border-style: solid;
-  text-align: center;
-  align-items: center;
-  vertical-align: middle;
-  justify-content: center;
-}
-.menu_button:hover {
-  color: black;
-  background-color: red;
-  border-color: purple;
-}
 .menuWrapper {
   display: flex;
   flex: 1;
@@ -90,6 +72,7 @@
   background-color: black;
   display: flex;
   flex: 1;
+  padding: 8px;
   border-color: #f01111;
   border-width: 5px;
   border-style: solid;

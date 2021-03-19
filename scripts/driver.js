@@ -65,9 +65,7 @@ MyGame.main = (function(graphics, input, storage) {
   function gameLoop(time) {
     if (!gameLoaded) {
       // initial game settup
-      //storage.addScore(55, "Mr Lich");
       storage.reportScores();
-      //storage.clear();
     }
     let elapsedTime = time - lastTimeStamp;
     lastTimeStamp = time;
@@ -77,7 +75,9 @@ MyGame.main = (function(graphics, input, storage) {
     if (!gameLoaded) {
       gameLoaded = true;
     }
-    requestAnimationFrame(gameLoop);
+    if (!gameOver) {
+      requestAnimationFrame(gameLoop);
+    }
   };
   // Create the keyboard input handler
   myKeyboard.registerCommand('w', lander.thrust);
