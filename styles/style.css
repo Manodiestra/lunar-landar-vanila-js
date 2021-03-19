@@ -87,6 +87,9 @@
 .greenText {
   color: green;
 }
+.whiteText {
+  color: white;
+}
 #leaderBoard {
   display: flex;
   flex: 1;

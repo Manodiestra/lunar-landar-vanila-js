@@ -103,7 +103,6 @@ MyGame.storage = (
       localStorage.clear();
     }
     function reportScores() {
-      console.log('SCORE REPORT');
       scoreBoard.innerHTML = null;
       let scoreKeys = Object.keys(highScores);
       scoreKeys.sort(function(a, b) {

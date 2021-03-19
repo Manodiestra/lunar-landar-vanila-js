@@ -14,6 +14,7 @@ MyGame.main = (function(graphics, input, storage) {
   let screenTimeValue = document.getElementById('timeValue');
   let fuelDisplay = document.getElementById('fuelValue');
   let velocityDisplay = document.getElementById('velocityValue');
+  let angleDisplay = document.getElementById('angleValue');
   let gameOver = false;
 
   let myKeyboard = input.Keyboard();
@@ -58,10 +59,19 @@ MyGame.main = (function(graphics, input, storage) {
     if (!gameOver) {
       screenTimeValue.innerText = Math.floor(
         (performance.now() - startTime) / 1000) + ' sec';
+      // Fuel calculations
+      if (fuel < 0) {
+        fuel = 0;
+      }
       fuelDisplay.innerText = fuel.toFixed(1);
       if (fuel <= 15) {
         fuelDisplay.classList.add('redText');
       }
+      if (fuel <= 0) {
+        fuelDisplay.classList.remove('redText');
+        fuelDisplay.classList.add('whiteText');
+      }
+      // Velocity calculations
       let velocity = Math.sqrt(
         lander.getVerticalVector() ** 2
         + lander.getHorizontalVector() ** 2
@@ -75,6 +85,18 @@ MyGame.main = (function(graphics, input, storage) {
         velocityDisplay.classList.remove('greenText');
         velocityDisplay.classList.add('redText');
       }
+      // Angle Calculations
+      let rotation = Math.abs(((lander.getRotation() % (Math.PI * 2)) * 180 / Math.PI).toFixed(1))
+      angleDisplay.innerText = rotation + ' DEG';
+      if (rotation <= 5 || rotation >= 355) {
+          angleDisplay.classList.add('greenText');
+          angleDisplay.classList.remove('redText');
+        }
+      else {
+        angleDisplay.classList.remove('greenText');
+        angleDisplay.classList.add('redText');
+      }
+      // Track lander movement
       lander.gravity(elapsedTime);
       lander.horizontalMove(elapsedTime);
       lander.verticalMove(elapsedTime);

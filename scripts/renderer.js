@@ -88,6 +88,9 @@ MyGame.graphics = (function() {
     that.getHorizontalVector = function() {
       return JSON.parse(JSON.stringify(spec.horizontalVector));
     }
+    that.getRotation = function() {
+      return JSON.parse(JSON.stringify(spec.rotation));
+    }
     that.draw = function() {
       if (ready) {
         context.save();
