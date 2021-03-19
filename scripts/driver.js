@@ -80,9 +80,9 @@ MyGame.main = (function(graphics, input, storage) {
     }
   };
   // Create the keyboard input handler
-  myKeyboard.registerCommand('w', lander.thrust);
-  myKeyboard.registerCommand('q', lander.rotateLeft);
-  myKeyboard.registerCommand('e', lander.rotateRight);
+  myKeyboard.registerCommand(storage.getKey('thrust'), lander.thrust);
+  myKeyboard.registerCommand(storage.getKey('rotateLeft'), lander.rotateLeft);
+  myKeyboard.registerCommand(storage.getKey('rotateRight'), lander.rotateRight);
   // INICIATE!
   requestAnimationFrame(gameLoop);
 }(MyGame.graphics, MyGame.input, MyGame.storage));

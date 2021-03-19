@@ -7,11 +7,17 @@ MyGame.storage = (
     let storedKeyConfig = localStorage.getItem('MyGame.keyConfig');
     let scoreBoard = document.getElementById('leaderBoard');
     let thrustDisplay = document.getElementById('thrustDisplay');
-    thrustDisplay.onclick = thrustListen;
+    if (thrustDisplay !== null) {
+      thrustDisplay.onclick = thrustListen;
+    }
     let rotateLeftDisplay = document.getElementById('rotateLeftDisplay');
-    rotateLeftDisplay.onclick = rotateLeftListen;
+    if (rotateLeftDisplay !== null) {
+      rotateLeftDisplay.onclick = rotateLeftListen;
+    }
     let rotateRightDisplay = document.getElementById('rotateRightDisplay');
-    rotateRightDisplay.onclick = rotateRightListen;
+    if (rotateRightDisplay !== null) {
+      rotateRightDisplay.onclick = rotateRightListen;
+    }
     let thrust = false;
     let rotateLeft = false;
     let rotateRight = false;
@@ -29,18 +35,21 @@ MyGame.storage = (
       }
     }
     function thrustListen() {
+      showKeys();
       thrustDisplay.innerHTML = "<h2>Press a key...</h2>";
       thrust = true;
       rotateLeft = false;
       rotateRight = false;
     }
     function rotateLeftListen() {
+      showKeys();
       rotateLeftDisplay.innerHTML = "<h2>Press a key...</h2>";
       rotateLeft = true;
       thrust = false;
       rotateRight = false;
     }
     function rotateRightListen() {
+      showKeys();
       rotateRightDisplay.innerHTML = "<h2>Press a key...</h2>";
       rotateRight = true;
       thrust = false;
@@ -48,13 +57,13 @@ MyGame.storage = (
     }
     function setKey(key, element, command) {
       element.innerHTML = key;
-      console.log('BEFORE', JSON.parse(JSON.stringify(keyConfig)));
       keyConfig[command] = key;
-      console.log('AFTER', JSON.parse(JSON.stringify(keyConfig)));
       localStorage['MyGame.keyConfig'] = JSON.stringify(keyConfig);
     }
+    function getKey(command) {
+      return keyConfig[command];
+    }
     document.addEventListener('keydown', function(event) {
-      console.log('EVENT', event);
       if (thrust) {
         setKey(event.key, thrustDisplay, 'thrust');
       }
@@ -70,9 +79,11 @@ MyGame.storage = (
       showKeys();
     });
     function showKeys() {
-      thrustDisplay.innerHTML = "<h2>" + keyConfig['thrust'] + "</h2>";
-      rotateLeftDisplay.innerHTML = "<h2>" + keyConfig['rotateLeft'] + "</h2>";
-      rotateRightDisplay.innerHTML = "<h2>" + keyConfig['rotateRight'] + "</h2>";
+      if (thrustDisplay !== null) {
+        thrustDisplay.innerHTML = "<h2>" + keyConfig['thrust'] + "</h2>";
+        rotateLeftDisplay.innerHTML = "<h2>" + keyConfig['rotateLeft'] + "</h2>";
+        rotateRightDisplay.innerHTML = "<h2>" + keyConfig['rotateRight'] + "</h2>";
+      }
     }
     function addScore(score, player) {
       let randomNum = Math.floor(Math.random() * 10000);
@@ -92,6 +103,7 @@ MyGame.storage = (
       localStorage.clear();
     }
     function reportScores() {
+      console.log('SCORE REPORT');
       scoreBoard.innerHTML = null;
       let scoreKeys = Object.keys(highScores);
       scoreKeys.sort(function(a, b) {
@@ -119,6 +131,7 @@ MyGame.storage = (
       reportScores,
       clear,
       showKeys,
+      getKey,
     };
   }()
 );
