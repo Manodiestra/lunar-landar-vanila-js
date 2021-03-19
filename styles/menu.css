@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Xirod';
-  src: url('./assets/xirod/xirod.ttf');
+  src: url('../assets/xirod/xirod.ttf');
 }
 #body {
   background-color: black;

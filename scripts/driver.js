@@ -1,4 +1,4 @@
-MyGame.main = (function(graphics, input) {
+MyGame.main = (function(graphics, input, storage) {
   'use strict';
   let startTime = performance.now();
   let lastTimeStamp = JSON.parse(JSON.stringify(startTime));
@@ -12,22 +12,8 @@ MyGame.main = (function(graphics, input) {
   let difficulty = gameDifficulty[selectedDifficulty];
   let fuel = 100;
   let screenTimeValue = document.getElementById('timeValue');
-  let scoreBoard = document.getElementById('leaderBoard');
-  let allScores = [82, 22];
   let fuelDisplay = document.getElementById('fuelValue');
   let gameOver = false;
-
-  function makeScoreBoard() {
-    scoreBoard.innerHTML = null;
-    allScores.sort(function(a, b){return b-a});
-    let number = allScores.length;
-    if (number > 5) {
-      number = 5;
-    }
-    for (let i = 0; i < number; i++) {
-      scoreBoard.innerHTML += "<h3 class='valueStyle'>" + allScores[i] + "</h3>";
-    }
-  }
 
   let myKeyboard = input.Keyboard();
 
@@ -79,7 +65,9 @@ MyGame.main = (function(graphics, input) {
   function gameLoop(time) {
     if (!gameLoaded) {
       // initial game settup
-      makeScoreBoard();
+      //storage.addScore(55, "Mr Lich");
+      storage.reportScores();
+      //storage.clear();
     }
     let elapsedTime = time - lastTimeStamp;
     lastTimeStamp = time;
@@ -97,4 +85,4 @@ MyGame.main = (function(graphics, input) {
   myKeyboard.registerCommand('e', lander.rotateRight);
   // INICIATE!
   requestAnimationFrame(gameLoop);
-}(MyGame.graphics, MyGame.input));
+}(MyGame.graphics, MyGame.input, MyGame.storage));
