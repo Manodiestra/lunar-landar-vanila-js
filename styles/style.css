@@ -81,6 +81,12 @@
   vertical-align: middle;
   justify-content: center;
 }
+.redText {
+  color: red;
+}
+.greenText {
+  color: green;
+}
 #leaderBoard {
   display: flex;
   flex: 1;

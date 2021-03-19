@@ -13,6 +13,7 @@ MyGame.main = (function(graphics, input, storage) {
   let fuel = 100;
   let screenTimeValue = document.getElementById('timeValue');
   let fuelDisplay = document.getElementById('fuelValue');
+  let velocityDisplay = document.getElementById('velocityValue');
   let gameOver = false;
 
   let myKeyboard = input.Keyboard();
@@ -22,23 +23,31 @@ MyGame.main = (function(graphics, input, storage) {
     start_x: 1,
     start_y: 1,
   })
-
   let lander = graphics.Texture({
     image: 'assets/lander.png',
     center: {x: 100, y: 100},
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     rotation: 0,
-    moveRate: 200,            // pixels per second
+    moveRate: 200,          // pixels per second
     rotateRate: 3.14159,    // Radians per second
     verticalVector: 0,
     horizontalVector: 0,
+    useFuel: function(elapsedTime) {
+      fuel -= elapsedTime;
+    }
   });
   // Process the registered input handlers here.
   function processInput(elapsedTime) {
     if (!gameOver) {
       myKeyboard.update(elapsedTime);
     }
+  }
+  function generateTerrain() {
+    console.log('GENERATE TERRAIN');
+  }
+  function drawTerrain() {
+    // do this stuff
   }
   // Update function
   function update(elapsedTime) {
@@ -49,7 +58,23 @@ MyGame.main = (function(graphics, input, storage) {
     if (!gameOver) {
       screenTimeValue.innerText = Math.floor(
         (performance.now() - startTime) / 1000) + ' sec';
-      fuelDisplay.innerText = fuel;
+      fuelDisplay.innerText = fuel.toFixed(1);
+      if (fuel <= 15) {
+        fuelDisplay.classList.add('redText');
+      }
+      let velocity = Math.sqrt(
+        lander.getVerticalVector() ** 2
+        + lander.getHorizontalVector() ** 2
+      ) * 3;
+      velocityDisplay.innerText = velocity.toFixed(1);
+      if (velocity <= 2) {
+        velocityDisplay.classList.add('greenText');
+        velocityDisplay.classList.remove('redText');
+      }
+      else {
+        velocityDisplay.classList.remove('greenText');
+        velocityDisplay.classList.add('redText');
+      }
       lander.gravity(elapsedTime);
       lander.horizontalMove(elapsedTime);
       lander.verticalMove(elapsedTime);
@@ -59,12 +84,14 @@ MyGame.main = (function(graphics, input, storage) {
   function render() {
     graphics.clear();
     backDrop.draw();
+    drawTerrain();
     lander.draw();
   }
   // the Game Loop
   function gameLoop(time) {
     if (!gameLoaded) {
       // initial game settup
+      generateTerrain();
       storage.reportScores();
     }
     let elapsedTime = time - lastTimeStamp;
@@ -80,9 +107,21 @@ MyGame.main = (function(graphics, input, storage) {
     }
   };
   // Create the keyboard input handler
-  myKeyboard.registerCommand(storage.getKey('thrust'), lander.thrust);
-  myKeyboard.registerCommand(storage.getKey('rotateLeft'), lander.rotateLeft);
-  myKeyboard.registerCommand(storage.getKey('rotateRight'), lander.rotateRight);
+  myKeyboard.registerCommand(
+    storage.getKey('thrust'),
+    function(elapsedTime) {if (fuel >= 0) {
+      lander.thrust(elapsedTime * Number(difficulty));
+    }}
+  );
+  //myKeyboard.registerCommand('a', MyTexture.moveLeft);
+  myKeyboard.registerCommand(
+    storage.getKey('rotateLeft'),
+    lander.rotateLeft
+  );
+  myKeyboard.registerCommand(
+    storage.getKey('rotateRight'),
+    lander.rotateRight
+  );
   // INICIATE!
   requestAnimationFrame(gameLoop);
 }(MyGame.graphics, MyGame.input, MyGame.storage));

@@ -3,8 +3,8 @@
 // ------------------------------------------------------------------
 MyGame.graphics = (function() {
   'use strict';
-  const thrustForce = 2;
-  const gravity = 1;
+  const thrustForce = 1.75;
+  const gravity = .75;
   let canvas = document.getElementById('canvas');
   let context = canvas.getContext('2d');
   let backgroundImage = new Image();
@@ -69,6 +69,7 @@ MyGame.graphics = (function() {
         * (elapsedTime / 1000) * spec.verticalVector;
     };
     that.thrust = function(elapsedTime) {
+      spec.useFuel(elapsedTime / 1000 * 5);
       spec.verticalVector += (elapsedTime / 1000) 
         * thrustForce * Math.cos(spec.rotation);
       spec.horizontalVector += (elapsedTime / 1000) 
@@ -80,6 +81,12 @@ MyGame.graphics = (function() {
     }
     that.getCenter = function() {
       return JSON.parse(JSON.stringify(spec.center));
+    }
+    that.getVerticalVector = function() {
+      return JSON.parse(JSON.stringify(spec.verticalVector));
+    }
+    that.getHorizontalVector = function() {
+      return JSON.parse(JSON.stringify(spec.horizontalVector));
     }
     that.draw = function() {
       if (ready) {
