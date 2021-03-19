@@ -20,18 +20,21 @@
     <div class="scoreWrapper">
       <div class="menuWrapper">
         <div class="label">Thrust Key</div>
-        <div class="menu_item"></div>
+        <div id="thrustDisplay" class="menu_item"></div>
       </div>
       <div class="menuWrapper">
         <div class="label">Rotate Left Key</div>
-        <div class="menu_item"></div>
+        <div id="rotateLeftDisplay" class="menu_item"></div>
       </div>
       <div class="menuWrapper">
         <div class="label">Rotate Right Key</div>
-        <div class="menu_item"></div>
+        <div id="rotateRightDisplay" class="menu_item"></div>
       </div>
     </div>
   </div>
   <script src="./scripts/storage.js"></script>
+  <script>
+    MyGame.storage.showKeys();
+  </script>
 </body>
 </html>
