@@ -1,4 +1,4 @@
-MyGame.main = (function(graphics, input, storage) {
+MyGame.main = (function(graphics, input, storage, audio) {
   'use strict';
   let startTime = performance.now();
   let lastTimeStamp = JSON.parse(JSON.stringify(startTime));
@@ -17,6 +17,11 @@ MyGame.main = (function(graphics, input, storage) {
   let angleDisplay = document.getElementById('angleValue');
   let gameOver = false;
   let gameOverCountdown = 3000;
+  let terrainData = [];
+
+  let explode_sound;
+  let trumpet_sound;
+  let thrust_sound;
 
   let myKeyboard = input.Keyboard();
 
@@ -47,15 +52,28 @@ MyGame.main = (function(graphics, input, storage) {
   }
   function recursiveGenerate(leftPoint, rightPoint) {
     // Base case
-    if (rightPoint.hori - leftPoint.hori <= 50) {
+    if (rightPoint.hori - leftPoint.hori <= 20) {
       return [leftPoint, rightPoint];
     }
-    let midPoint = {
-      vert: 600,
-      hori: leftPoint.hori + ((rightPoint - leftPoint) / 2),
+    let s = 1;
+    let u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    let g = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+    let r = s * g * Math.abs(rightPoint.hori - leftPoint.hori);
+    let y = (leftPoint.vert + rightPoint.vert) / 2 + r;
+    if (y < 300) {
+      y = y + 200;
     }
-    //return recursiveGenerate(leftPoint, midPoint)
-    //  .concat(recursiveGenerate(midPoint, rightPoint));
+    if (y > 990) {
+      y = y - 70;
+    }
+    let midPoint = {
+      vert: y,
+      hori: Math.round(leftPoint.hori + ((rightPoint.hori - leftPoint.hori) / 2)),
+    }
+    return recursiveGenerate(leftPoint, midPoint)
+     .concat(recursiveGenerate(midPoint, rightPoint));
   }
   function generateTerrain() {
     console.log('GENERATE TERRAIN');
@@ -63,16 +81,16 @@ MyGame.main = (function(graphics, input, storage) {
     let height = canvas.height;
     let midHeight = Math.floor(height / 2);
     let leftPoint = {
-      vert: Math.random() * midHeight + midHeight,
+      vert: Math.round(Math.random() * midHeight + midHeight),
       hori: 0,
     }
     let rightPoint = {
-      vert: Math.random() * midHeight + midHeight,
+      vert: Math.round(Math.random() * midHeight + midHeight),
       hori: width,
     }
     let zoneWidth = width / (7 * difficulty);
-    let zone1Height = height * Math.random() / 2 + height / 2;
-    let zone1Width = width * (3/10) * Math.random() + width / 10;
+    let zone1Height = Math.round(height * Math.random() / 2 + height / 2);
+    let zone1Width = Math.round(width * (3/10) * Math.random() + width / 10);
     let startZone1 = {
       vert: zone1Height,
       hori: zone1Width,
@@ -81,8 +99,8 @@ MyGame.main = (function(graphics, input, storage) {
       vert: zone1Height,
       hori: zone1Width + zoneWidth,
     }
-    let zone2Height = height * Math.random() / 2 + height / 2;
-    let zone2Width = width * (4/10) * Math.random() + width * (5 / 10);
+    let zone2Height = Math.round(height * Math.random() / 2 + height / 2);
+    let zone2Width = Math.round(width * (4/10) * Math.random() + width * (5 / 10));
     let startZone2 = {
       vert: zone2Height,
       hori: zone2Width,
@@ -94,15 +112,55 @@ MyGame.main = (function(graphics, input, storage) {
     let segment1 = recursiveGenerate(leftPoint, startZone1);
     let segment2 = recursiveGenerate(endZone1, startZone2);
     let segment3 = recursiveGenerate(endZone2, rightPoint);
+    console.log('SEG 1 ', segment1);
+    console.log('SEG 2 ', segment2);
+    console.log('SEG 3 ', segment3);
+    terrainData.push(segment1);
+    terrainData.push([startZone1, endZone1]);
+    terrainData.push(segment2);
+    terrainData.push([startZone2, endZone2]);
+    terrainData.push(segment3);
   }
   function drawTerrain() {
-    // do this stuff
+    console.log('SEGMENTS', terrainData);
+    for (let c = 0; c < terrainData.length; c++) {
+      let segments = terrainData[c];
+      for (let i = 0; i < segments.length - 1; i++) {
+        let seg = segments[i];
+        let newLine = {};
+        newLine.begin_x = seg.hori;
+        newLine.begin_y = seg.vert;
+        newLine.end_x = segments[i + 1].hori;
+        newLine.end_y = segments[i + 1].vert;
+        newLine.width = 5;
+        newLine.strokeStyle = 'rgba(255, 0, 0, 1)';
+        graphics.drawLine(newLine);
+      }
+    }
+  }
+  function loadAudio() {
+    // Reference: https://soundbible.com/1986-Bomb-Exploding.html
+    explode_sound = audio.Sound({
+      src: './assets/Bomb_Exploding.mp3',
+      name: 'Explosion',
+    });
+    // Reference: https://soundbible.com/1498-Rocket.html
+    thrust_sound = audio.Sound({
+      src: './assets/Rocket.mp3',
+      name: 'Thrust',
+    });
+    // Reference: https://soundbible.com/1823-Winning-Triumphal-Fanfare.html
+    trumpet_sound = audio.Sound({
+      src: './assets/Short_triumpet.mp3',
+      name: 'Victory'
+    });
   }
   // Update function
   function update(elapsedTime) {
     if (lander.getCenter().x <= 0 || lander.getCenter().x >= canvas.width
       || lander.getCenter().y <= 0 || lander.getCenter().y >= canvas.height) {
       gameOver = true;
+      explode_sound.play();
     }
     if (!gameOver) {
       screenTimeValue.innerText = Math.floor(
@@ -170,15 +228,14 @@ MyGame.main = (function(graphics, input, storage) {
       // initial game settup
       generateTerrain();
       storage.reportScores();
+      loadAudio();
+      gameLoaded = true;
     }
     let elapsedTime = time - lastTimeStamp;
     lastTimeStamp = time;
     processInput(elapsedTime);
     update(elapsedTime);
     render();
-    if (!gameLoaded) {
-      gameLoaded = true;
-    }
     if (gameOverCountdown > 0) {
       requestAnimationFrame(gameLoop);
     }
@@ -186,11 +243,15 @@ MyGame.main = (function(graphics, input, storage) {
   // Create the keyboard input handler
   myKeyboard.registerCommand(
     storage.getKey('thrust'),
-    function(elapsedTime) {if (fuel >= 0) {
-      lander.thrust(elapsedTime * Number(difficulty));
-    }}
+    (elapsedTime) => {
+      if (fuel > 0) {
+        lander.thrust(elapsedTime * Number(difficulty));
+        thrust_sound.play();
+        //if (myKeyboard.)
+        setTimeout(() => {thrust_sound.pause();}, 600);
+      }
+    }
   );
-  //myKeyboard.registerCommand('a', MyTexture.moveLeft);
   myKeyboard.registerCommand(
     storage.getKey('rotateLeft'),
     lander.rotateLeft
@@ -201,4 +262,4 @@ MyGame.main = (function(graphics, input, storage) {
   );
   // INICIATE!
   requestAnimationFrame(gameLoop);
-}(MyGame.graphics, MyGame.input, MyGame.storage));
+}(MyGame.graphics, MyGame.input, MyGame.storage, MyGame.audio));

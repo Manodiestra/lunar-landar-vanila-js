@@ -45,6 +45,16 @@ MyGame.graphics = (function() {
     };
     return that;
   }
+  function drawLine(spec) {
+    context.beginPath();
+    context.lineWidth = spec.width;
+    context.strokeStyle = spec.strokeStyle;
+    context.moveTo(spec.begin_x, spec.begin_y);
+    context.lineTo(spec.end_x, spec.end_y);
+    context.closePath();
+    context.stroke();
+    console.log('DONE DRAWING', spec);
+  }
   // Texture object
   function Texture(spec) {
     let that = {};
@@ -112,6 +122,7 @@ MyGame.graphics = (function() {
     clear,
     Texture,
     BackgroundImage,
+    drawLine,
   };
 }());
 
