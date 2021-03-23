@@ -29,9 +29,9 @@ MyGame.storage = (
     }
     else {
       keyConfig = {
-        'thrust': 'w',
-        'rotateLeft': 'q',
-        'rotateRight': 'e',
+        'thrust': 'ArrowUp',
+        'rotateLeft': 'ArrowLeft',
+        'rotateRight': 'ArrowRight',
       }
     }
     function thrustListen() {

@@ -16,6 +16,7 @@ MyGame.main = (function(graphics, input, storage) {
   let velocityDisplay = document.getElementById('velocityValue');
   let angleDisplay = document.getElementById('angleValue');
   let gameOver = false;
+  let gameOverCountdown = 3000;
 
   let myKeyboard = input.Keyboard();
 
@@ -44,8 +45,55 @@ MyGame.main = (function(graphics, input, storage) {
       myKeyboard.update(elapsedTime);
     }
   }
+  function recursiveGenerate(leftPoint, rightPoint) {
+    // Base case
+    if (rightPoint.hori - leftPoint.hori <= 50) {
+      return [leftPoint, rightPoint];
+    }
+    let midPoint = {
+      vert: 600,
+      hori: leftPoint.hori + ((rightPoint - leftPoint) / 2),
+    }
+    //return recursiveGenerate(leftPoint, midPoint)
+    //  .concat(recursiveGenerate(midPoint, rightPoint));
+  }
   function generateTerrain() {
     console.log('GENERATE TERRAIN');
+    let width = canvas.width;
+    let height = canvas.height;
+    let midHeight = Math.floor(height / 2);
+    let leftPoint = {
+      vert: Math.random() * midHeight + midHeight,
+      hori: 0,
+    }
+    let rightPoint = {
+      vert: Math.random() * midHeight + midHeight,
+      hori: width,
+    }
+    let zoneWidth = width / (7 * difficulty);
+    let zone1Height = height * Math.random() / 2 + height / 2;
+    let zone1Width = width * (3/10) * Math.random() + width / 10;
+    let startZone1 = {
+      vert: zone1Height,
+      hori: zone1Width,
+    }
+    let endZone1 = {
+      vert: zone1Height,
+      hori: zone1Width + zoneWidth,
+    }
+    let zone2Height = height * Math.random() / 2 + height / 2;
+    let zone2Width = width * (4/10) * Math.random() + width * (5 / 10);
+    let startZone2 = {
+      vert: zone2Height,
+      hori: zone2Width,
+    }
+    let endZone2 = {
+      vert: zone2Height,
+      hori: zone2Width + zoneWidth,
+    }
+    let segment1 = recursiveGenerate(leftPoint, startZone1);
+    let segment2 = recursiveGenerate(endZone1, startZone2);
+    let segment3 = recursiveGenerate(endZone2, rightPoint);
   }
   function drawTerrain() {
     // do this stuff
@@ -86,12 +134,14 @@ MyGame.main = (function(graphics, input, storage) {
         velocityDisplay.classList.add('redText');
       }
       // Angle Calculations
-      let rotation = Math.abs(((lander.getRotation() % (Math.PI * 2)) * 180 / Math.PI).toFixed(1))
+      let rotation = Math.abs(
+        ((lander.getRotation() % (Math.PI * 2)) * 180 / Math.PI).toFixed(1)
+      );
       angleDisplay.innerText = rotation + ' DEG';
       if (rotation <= 5 || rotation >= 355) {
-          angleDisplay.classList.add('greenText');
-          angleDisplay.classList.remove('redText');
-        }
+        angleDisplay.classList.add('greenText');
+        angleDisplay.classList.remove('redText');
+      }
       else {
         angleDisplay.classList.remove('greenText');
         angleDisplay.classList.add('redText');
@@ -100,6 +150,11 @@ MyGame.main = (function(graphics, input, storage) {
       lander.gravity(elapsedTime);
       lander.horizontalMove(elapsedTime);
       lander.verticalMove(elapsedTime);
+    }
+    else {
+      if (gameOverCountdown > 0) {
+        gameOverCountdown -= elapsedTime;
+      }
     }
   }
   // Render function
@@ -124,7 +179,7 @@ MyGame.main = (function(graphics, input, storage) {
     if (!gameLoaded) {
       gameLoaded = true;
     }
-    if (!gameOver) {
+    if (gameOverCountdown > 0) {
       requestAnimationFrame(gameLoop);
     }
   };
