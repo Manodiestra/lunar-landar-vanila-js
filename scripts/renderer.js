@@ -3,8 +3,8 @@
 // ------------------------------------------------------------------
 MyGame.graphics = (function() {
   'use strict';
-  const thrustForce = 1.75;
-  const gravity = .75;
+  const thrustForce = 1.2;
+  const gravity = .5;
   let canvas = document.getElementById('canvas');
   let context = canvas.getContext('2d');
   let backgroundImage = new Image();
@@ -53,7 +53,6 @@ MyGame.graphics = (function() {
     context.lineTo(spec.end_x, spec.end_y);
     context.closePath();
     context.stroke();
-    console.log('DONE DRAWING', spec);
   }
   // Texture object
   function Texture(spec) {

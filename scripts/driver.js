@@ -18,6 +18,7 @@ MyGame.main = (function(graphics, input, storage, audio) {
   let gameOver = false;
   let gameOverCountdown = 3000;
   let terrainData = [];
+  let buf = 16;
 
   let explode_sound;
   let trumpet_sound;
@@ -33,8 +34,8 @@ MyGame.main = (function(graphics, input, storage, audio) {
   let lander = graphics.Texture({
     image: 'assets/lander.png',
     center: {x: 100, y: 100},
-    width: 50,
-    height: 50,
+    width: 30,
+    height: 30,
     rotation: 0,
     moveRate: 200,          // pixels per second
     rotateRate: 3.14159,    // Radians per second
@@ -76,7 +77,6 @@ MyGame.main = (function(graphics, input, storage, audio) {
      .concat(recursiveGenerate(midPoint, rightPoint));
   }
   function generateTerrain() {
-    console.log('GENERATE TERRAIN');
     let width = canvas.width;
     let height = canvas.height;
     let midHeight = Math.floor(height / 2);
@@ -109,20 +109,13 @@ MyGame.main = (function(graphics, input, storage, audio) {
       vert: zone2Height,
       hori: zone2Width + zoneWidth,
     }
-    let segment1 = recursiveGenerate(leftPoint, startZone1);
-    let segment2 = recursiveGenerate(endZone1, startZone2);
-    let segment3 = recursiveGenerate(endZone2, rightPoint);
-    console.log('SEG 1 ', segment1);
-    console.log('SEG 2 ', segment2);
-    console.log('SEG 3 ', segment3);
-    terrainData.push(segment1);
+    terrainData.push(recursiveGenerate(leftPoint, startZone1));
     terrainData.push([startZone1, endZone1]);
-    terrainData.push(segment2);
+    terrainData.push(recursiveGenerate(endZone1, startZone2));
     terrainData.push([startZone2, endZone2]);
-    terrainData.push(segment3);
+    terrainData.push(recursiveGenerate(endZone2, rightPoint));
   }
   function drawTerrain() {
-    console.log('SEGMENTS', terrainData);
     for (let c = 0; c < terrainData.length; c++) {
       let segments = terrainData[c];
       for (let i = 0; i < segments.length - 1; i++) {
@@ -157,8 +150,55 @@ MyGame.main = (function(graphics, input, storage, audio) {
   }
   // Update function
   function update(elapsedTime) {
-    if (lander.getCenter().x <= 0 || lander.getCenter().x >= canvas.width
-      || lander.getCenter().y <= 0 || lander.getCenter().y >= canvas.height) {
+    // Check for out of bounds
+    if (
+      lander.getCenter().x - buf <= 0 || lander.getCenter().x + buf >= canvas.width
+      || lander.getCenter().y - buf <= 0 || lander.getCenter().y + buf >= canvas.height
+    ) {
+      gameOver = true;
+      explode_sound.play();
+    }
+    // Check for landing on a stage 1
+    else if (
+      lander.getCenter().x >= terrainData[1][0].hori
+      && lander.getCenter().x <= terrainData[1][1].hori
+      && lander.getCenter().y + buf >= terrainData[1][0].vert
+      && velocityDisplay.classList.contains('greenText')
+      && angleDisplay.classList.contains('greenText')
+    ) {
+      gameOver = true;
+      trumpet_sound.play();
+    }
+    // Crash into stage 1
+    else if (
+      lander.getCenter().x >= terrainData[1][0].hori
+      && lander.getCenter().x <= terrainData[1][1].hori
+      && lander.getCenter().y + buf >= terrainData[1][0].vert
+      && velocityDisplay.classList.contains('redText')
+      && angleDisplay.classList.contains('redText')
+    ) {
+      gameOver = true;
+      explode_sound.play();
+    }
+    // Check for landing on a stage 2
+    else if (
+      lander.getCenter().x >= terrainData[3][0].hori
+      && lander.getCenter().x <= terrainData[3][1].hori
+      && lander.getCenter().y + buf >= terrainData[3][0].vert
+      && velocityDisplay.classList.contains('greenText')
+      && angleDisplay.classList.contains('greenText')
+    ) {
+      gameOver = true;
+      trumpet_sound.play();
+    }
+    // Crash into stage 2
+    else if (
+      lander.getCenter().x >= terrainData[3][0].hori
+      && lander.getCenter().x <= terrainData[3][1].hori
+      && lander.getCenter().y + buf >= terrainData[3][0].vert
+      && velocityDisplay.classList.contains('redText')
+      && angleDisplay.classList.contains('redText')
+    ) {
       gameOver = true;
       explode_sound.play();
     }
