@@ -133,7 +133,7 @@ function(graphics, input, storage, audio, systems, renderer) {
   }
   function recursiveGenerate(leftPoint, rightPoint) {
     // Base case
-    if (rightPoint.hori - leftPoint.hori <= 20) {
+    if (rightPoint.hori - leftPoint.hori <= 10) {
       return [leftPoint, rightPoint];
     }
     let s = 1;
@@ -143,11 +143,11 @@ function(graphics, input, storage, audio, systems, renderer) {
     let g = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
     let r = s * g * Math.abs(rightPoint.hori - leftPoint.hori);
     let y = (leftPoint.vert + rightPoint.vert) / 2 + r;
-    if (y < 300) {
-      y = y + 300;
+    while (y < 300) {
+      y = y + 50;
     }
-    if (y > 950) {
-      y = y - 200;
+    while (y > 950) {
+      y = y - 40;
     }
     let midPoint = {
       vert: y,
@@ -207,6 +207,9 @@ function(graphics, input, storage, audio, systems, renderer) {
         newLine.end_y = segments[i + 1].vert;
         newLine.width = 4;
         newLine.strokeStyle = 'rgba(255, 0, 0, 1)';
+        if (c === 1 || c === 3) {
+          newLine.strokeStyle = 'rgba(255, 0, 255, 1)';
+        }
         graphics.drawLine(newLine);
       }
     }
