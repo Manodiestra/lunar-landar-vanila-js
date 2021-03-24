@@ -203,22 +203,22 @@ function(graphics, input, storage, audio, systems, renderer) {
       yFir = yRad * -1;
       ySec = -1 + yRad;
     }
-    let xFir = 0;
-    let xSec = 0;
-    let xRad = rotationRadians / Math.PI
-    if (xRad > 0) {
-      xFir = -1 + xRad;
-      xSec = xRad;
+    let xFir = -.5;
+    let xSec = .5;
+    let xRad = (rotationRadians / Math.PI);
+    if (Math.abs(xRad > .5)) {
+      xFir += xRad;
+      xSec += xRad;
     }
     else {
-      xFir = xRad;
-      xSec = xRad + 1
+      xFir += xRad + .5;
+      xSec += xRad - .5;
     }
-    console.log('ROT', xFir, xSec);
+    console.log('ROT', xFir.toFixed(2), xSec.toFixed(2));
     particlesThrust.setBounds({
       x: {
-        first: xFir,
-        second: xSec,
+        first: -.5,
+        second: .5,
       },
       y: {
         first: yFir,
