@@ -1,4 +1,5 @@
-MyGame.main = (function(graphics, input, storage, audio) {
+MyGame.main = (
+function(graphics, input, storage, audio, systems, renderer) {
   'use strict';
   let startTime = performance.now();
   let lastTimeStamp = JSON.parse(JSON.stringify(startTime));
@@ -26,6 +27,20 @@ MyGame.main = (function(graphics, input, storage, audio) {
 
   let myKeyboard = input.Keyboard();
 
+  // Explosion fire object settup
+  let particlesFire = systems.ParticleSystem({
+      center: { x: 300, y: 300 },
+      size: { mean: 10, stdev: 4 },
+      speed: { mean: 200, stdev: 25 },
+      lifetime: { mean: 1, stdev: .2 }
+    },
+    graphics
+  );
+  let renderFire = renderer.ParticleSystem(
+    particlesFire,
+    graphics,
+    './assets/fire.png'
+  );
   let backDrop = graphics.BackgroundImage({
     image: 'assets/moon_space.jpeg',
     start_x: 1,
@@ -148,15 +163,21 @@ MyGame.main = (function(graphics, input, storage, audio) {
       name: 'Victory'
     });
   }
+  function youDied(elapsedTime) {
+    gameOver = true;
+    explode_sound.play();
+    particlesFire.update(elapsedTime);
+  }
   // Update function
   function update(elapsedTime) {
+    let newCenter = lander.getCenter();
+    particlesFire.setCenter(newCenter.x, newCenter.y);
     // Check for out of bounds
     if (
       lander.getCenter().x - buf <= 0 || lander.getCenter().x + buf >= canvas.width
       || lander.getCenter().y - buf <= 0 || lander.getCenter().y + buf >= canvas.height
     ) {
-      gameOver = true;
-      explode_sound.play();
+      youDied(elapsedTime);
     }
     // Check for landing on a stage 1
     else if (
@@ -177,8 +198,7 @@ MyGame.main = (function(graphics, input, storage, audio) {
       && velocityDisplay.classList.contains('redText')
       && angleDisplay.classList.contains('redText')
     ) {
-      gameOver = true;
-      explode_sound.play();
+      youDied(elapsedTime);
     }
     // Check for landing on a stage 2
     else if (
@@ -199,8 +219,7 @@ MyGame.main = (function(graphics, input, storage, audio) {
       && (velocityDisplay.classList.contains('redText')
       || angleDisplay.classList.contains('redText'))
     ) {
-      gameOver = true;
-      explode_sound.play();
+      youDied(elapsedTime);
     }
     if (!gameOver) {
       screenTimeValue.innerText = Math.floor(
@@ -261,6 +280,9 @@ MyGame.main = (function(graphics, input, storage, audio) {
     backDrop.draw();
     drawTerrain();
     lander.draw();
+    if (gameOver) {
+      renderFire.render();
+    }
   }
   // the Game Loop
   function gameLoop(time) {
@@ -302,4 +324,5 @@ MyGame.main = (function(graphics, input, storage, audio) {
   );
   // INICIATE!
   requestAnimationFrame(gameLoop);
-}(MyGame.graphics, MyGame.input, MyGame.storage, MyGame.audio));
+}(MyGame.graphics, MyGame.input, MyGame.storage, 
+  MyGame.audio, MyGame.systems, MyGame.render));
