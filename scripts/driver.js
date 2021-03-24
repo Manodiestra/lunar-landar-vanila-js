@@ -32,7 +32,7 @@ MyGame.main = (function(graphics, input, storage, audio) {
     start_y: 1,
   })
   let lander = graphics.Texture({
-    image: 'assets/lander.png',
+    image: 'assets/red_lander.png',
     center: {x: 100, y: 100},
     width: 30,
     height: 30,
@@ -125,7 +125,7 @@ MyGame.main = (function(graphics, input, storage, audio) {
         newLine.begin_y = seg.vert;
         newLine.end_x = segments[i + 1].hori;
         newLine.end_y = segments[i + 1].vert;
-        newLine.width = 5;
+        newLine.width = 4;
         newLine.strokeStyle = 'rgba(255, 0, 0, 1)';
         graphics.drawLine(newLine);
       }
@@ -196,8 +196,8 @@ MyGame.main = (function(graphics, input, storage, audio) {
       lander.getCenter().x >= terrainData[3][0].hori
       && lander.getCenter().x <= terrainData[3][1].hori
       && lander.getCenter().y + buf >= terrainData[3][0].vert
-      && velocityDisplay.classList.contains('redText')
-      && angleDisplay.classList.contains('redText')
+      && (velocityDisplay.classList.contains('redText')
+      || angleDisplay.classList.contains('redText'))
     ) {
       gameOver = true;
       explode_sound.play();
