@@ -20,6 +20,7 @@ function(graphics, input, storage, audio, systems, renderer) {
   let gameOverCountdown = 3000;
   let terrainData = [];
   let buf = 16;
+  let renderThrustParticles = false;
 
   let explode_sound;
   let trumpet_sound;
@@ -38,6 +39,19 @@ function(graphics, input, storage, audio, systems, renderer) {
   );
   let renderFire = renderer.ParticleSystem(
     particlesFire,
+    graphics,
+    './assets/fire.png'
+  );
+  let particlesThrust = systems.ParticleSystem({
+      center: { x: 300, y: 300 },
+      size: { mean: 5, stdev: 2 },
+      speed: { mean: 200, stdev: 25 },
+      lifetime: { mean: .3, stdev: .2 }
+    },
+    graphics
+  );
+  let renderThrust = renderer.ParticleSystem(
+    particlesThrust,
     graphics,
     './assets/fire.png'
   );
@@ -168,10 +182,50 @@ function(graphics, input, storage, audio, systems, renderer) {
     explode_sound.play();
     particlesFire.update(elapsedTime);
   }
+  function allGreen() {
+    return velocityDisplay.classList.contains('greenText')
+      && angleDisplay.classList.contains('greenText');
+  }
   // Update function
   function update(elapsedTime) {
     let newCenter = lander.getCenter();
     particlesFire.setCenter(newCenter.x, newCenter.y);
+    particlesThrust.setCenter(newCenter.x, newCenter.y);
+    let rotationRadians = lander.getRotation();
+    let yRad = Math.abs(rotationRadians / Math.PI);
+    let yFir = 0;
+    let ySec = 0;
+    if (yRad < .5) {
+      yFir = yRad;
+      ySec = 1 - yRad;
+    }
+    else {
+      yFir = yRad * -1;
+      ySec = -1 + yRad;
+    }
+    let xFir = 0;
+    let xSec = 0;
+    let xRad = rotationRadians / Math.PI
+    if (xRad > 0) {
+      xFir = -1 + xRad;
+      xSec = xRad;
+    }
+    else {
+      xFir = xRad;
+      xSec = xRad + 1
+    }
+    console.log('ROT', xFir, xSec);
+    particlesThrust.setBounds({
+      x: {
+        first: xFir,
+        second: xSec,
+      },
+      y: {
+        first: yFir,
+        second: ySec,
+      },
+    });
+    particlesThrust.update(elapsedTime);
     // Check for out of bounds
     if (
       lander.getCenter().x - buf <= 0 || lander.getCenter().x + buf >= canvas.width
@@ -184,8 +238,7 @@ function(graphics, input, storage, audio, systems, renderer) {
       lander.getCenter().x >= terrainData[1][0].hori
       && lander.getCenter().x <= terrainData[1][1].hori
       && lander.getCenter().y + buf >= terrainData[1][0].vert
-      && velocityDisplay.classList.contains('greenText')
-      && angleDisplay.classList.contains('greenText')
+      && allGreen()
     ) {
       gameOver = true;
       trumpet_sound.play();
@@ -195,8 +248,7 @@ function(graphics, input, storage, audio, systems, renderer) {
       lander.getCenter().x >= terrainData[1][0].hori
       && lander.getCenter().x <= terrainData[1][1].hori
       && lander.getCenter().y + buf >= terrainData[1][0].vert
-      && velocityDisplay.classList.contains('redText')
-      && angleDisplay.classList.contains('redText')
+      && !allGreen()
     ) {
       youDied(elapsedTime);
     }
@@ -205,8 +257,7 @@ function(graphics, input, storage, audio, systems, renderer) {
       lander.getCenter().x >= terrainData[3][0].hori
       && lander.getCenter().x <= terrainData[3][1].hori
       && lander.getCenter().y + buf >= terrainData[3][0].vert
-      && velocityDisplay.classList.contains('greenText')
-      && angleDisplay.classList.contains('greenText')
+      && allGreen()
     ) {
       gameOver = true;
       trumpet_sound.play();
@@ -216,8 +267,7 @@ function(graphics, input, storage, audio, systems, renderer) {
       lander.getCenter().x >= terrainData[3][0].hori
       && lander.getCenter().x <= terrainData[3][1].hori
       && lander.getCenter().y + buf >= terrainData[3][0].vert
-      && (velocityDisplay.classList.contains('redText')
-      || angleDisplay.classList.contains('redText'))
+      && !allGreen()
     ) {
       youDied(elapsedTime);
     }
@@ -279,6 +329,9 @@ function(graphics, input, storage, audio, systems, renderer) {
     graphics.clear();
     backDrop.draw();
     drawTerrain();
+    if (renderThrustParticles) {
+      renderThrust.render();
+    }
     lander.draw();
     if (gameOver) {
       renderFire.render();
@@ -311,6 +364,8 @@ function(graphics, input, storage, audio, systems, renderer) {
         thrust_sound.play();
         //if (myKeyboard.)
         setTimeout(() => {thrust_sound.pause();}, 600);
+        renderThrustParticles = true;
+        setTimeout(() => {renderThrustParticles = false;}, 600);
       }
     }
   );
