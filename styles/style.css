@@ -15,7 +15,7 @@
   flex: 1;
   flex-direction: row;
 }
-#title {
+.title {
   display: flex;
   flex: 5;
   align-content: center;
@@ -102,4 +102,26 @@ span.clear {
   display: block;
   margin: 0;
   height: 0;
+}
+.youWon {
+  height: 400px;
+  width: 800px;
+  position: fixed;
+  top: 100px;
+  left: 300px;
+  z-index: 100;
+  text-align: center;
+  background-color: black;
+  border: red solid 2px;
+}
+.countDown {
+  height: 200px;
+  width: 400px;
+  position: fixed;
+  top: 100px;
+  left: 600px;
+  z-index: 100;
+  text-align: center;
+  background-color: black;
+  border: red solid 2px;
 }

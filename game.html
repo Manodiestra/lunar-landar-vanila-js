@@ -10,9 +10,21 @@
   </script>
 </head>
 <body id="body">
+  <div id="youWon" class="youWon" hidden>
+    <h2 class=title>You Win!</h2>
+    <p>Enter your name and prepare for the next round</p>
+    <textarea id="nameInput"></textarea>
+    <div id="nextLevel" class="menu_item">Start Next Lvl</div>
+  </div>
+  <div id="countDown" class="countDown">
+    <h2 id="countDownVal" class=title></h2>
+  </div>
+  </div>
   <div id="top">
     <div class="menu_item" onclick="location.href='index.html'">Main Menu</div>
-    <h1 id="title">The Game</h1>
+    <h1 class="title">The Game</h1>
+    <h3 id="cur_level" class="label"></h3>
+    <div id="newGame" class="menu_item">New Game</div>
   </div>
   <div id="pauseMenu"></div>
   <div id="container">

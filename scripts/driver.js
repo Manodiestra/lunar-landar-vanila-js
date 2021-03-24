@@ -8,6 +8,7 @@ function(graphics, input, storage, audio, systems, renderer) {
   const gameDifficulty = {
     '1': 1,
     '2': 2,
+    '3': 3,
   };
   let selectedDifficulty = '1';
   let difficulty = gameDifficulty[selectedDifficulty];
@@ -16,11 +17,20 @@ function(graphics, input, storage, audio, systems, renderer) {
   let fuelDisplay = document.getElementById('fuelValue');
   let velocityDisplay = document.getElementById('velocityValue');
   let angleDisplay = document.getElementById('angleValue');
+  let youWonDisplay = document.getElementById('youWon');
+  let nextLevel = document.getElementById('nextLevel');
+  let nameInputDisplay = document.getElementById('nameInput');
+  let curLevelDisplay = document.getElementById('cur_level');
+  let newGameDisplay = document.getElementById('newGame');
+  let countDownDisplay = document.getElementById('countDown');
+  let countDownValDisplay = document.getElementById('countDownVal')
   let gameOver = false;
+  let gameStartCountDown = 0;
   let gameOverCountdown = 3000;
   let terrainData = [];
   let buf = 16;
   let renderThrustParticles = false;
+  let finishTime = null;
 
   let explode_sound;
   let trumpet_sound;
@@ -28,6 +38,47 @@ function(graphics, input, storage, audio, systems, renderer) {
 
   let myKeyboard = input.Keyboard();
 
+  // Prepare a new game
+  newGameDisplay.onclick = function() {
+    youWonDisplay.hidden = true;
+    selectedDifficulty = '1';
+    difficulty = gameDifficulty[selectedDifficulty];
+    fuel = 100;
+    gameOver = false;
+    gameOverCountdown = 3000;
+    terrainData = [];
+    gameLoaded = false;
+    startTime = performance.now();
+    lastTimeStamp = JSON.parse(JSON.stringify(startTime));
+    lander.setCenter(200, 40);
+    lander.reset();
+    gameStartCountDown = 3000;
+    countDownDisplay.hidden = false;
+    gameLoop(lastTimeStamp);
+  }
+  nextLevel.onclick = function() {
+    youWonDisplay.hidden = true;
+    let name = nameInputDisplay.value;
+    nameInputDisplay.value = '';
+    storage.addScore(
+      (fuel * Number(difficulty) / finishTime).toFixed(2),
+      name
+    );
+    selectedDifficulty = Number(selectedDifficulty) + 1;
+    difficulty = gameDifficulty[selectedDifficulty];
+    fuel = 100;
+    gameOver = false;
+    gameOverCountdown = 3000;
+    terrainData = [];
+    gameLoaded = false;
+    startTime = performance.now();
+    lastTimeStamp = JSON.parse(JSON.stringify(startTime));
+    lander.setCenter(200, 40);
+    lander.reset();
+    gameStartCountDown = 3000;
+    countDownDisplay.hidden = false;
+    gameLoop(lastTimeStamp);
+  }
   // Explosion fire object settup
   let particlesFire = systems.ParticleSystem({
       center: { x: 300, y: 300 },
@@ -93,10 +144,10 @@ function(graphics, input, storage, audio, systems, renderer) {
     let r = s * g * Math.abs(rightPoint.hori - leftPoint.hori);
     let y = (leftPoint.vert + rightPoint.vert) / 2 + r;
     if (y < 300) {
-      y = y + 200;
+      y = y + 300;
     }
-    if (y > 990) {
-      y = y - 70;
+    if (y > 950) {
+      y = y - 200;
     }
     let midPoint = {
       vert: y,
@@ -182,12 +233,38 @@ function(graphics, input, storage, audio, systems, renderer) {
     explode_sound.play();
     particlesFire.update(elapsedTime);
   }
+  function youWin() {
+    gameOver = true;
+    trumpet_sound.play();
+    youWonDisplay.hidden = false;
+    finishTime = Number(Math.floor((performance.now() - startTime) / 1000));
+  }
   function allGreen() {
     return velocityDisplay.classList.contains('greenText')
       && angleDisplay.classList.contains('greenText');
   }
-  // Update function
-  function update(elapsedTime) {
+  function crashedInMountain(shipX) {
+    for (let i = 0; i < terrainData.length; i++) {
+      for (let j = 0; j < terrainData[i].length - 1; j++) {
+        if (shipX > terrainData[i][j].hori &&
+          shipX < terrainData[i][j + 1].hori) {
+          // Find postiion relative to this part of the line segment
+          let b = terrainData[i][j].vert;
+          let m = (terrainData[i][j + 1].vert - terrainData[i][j].vert)
+            / (terrainData[i][j + 1].hori - terrainData[i][j].hori);
+          let x = shipX - terrainData[i][j].hori;
+          // That's right.
+          // I actually used y = m(x) + b outside of math class
+          let y = m * x + b;
+          if (lander.getCenter().y + buf > y) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+  function updateParticles(elapsedTime) {
     let newCenter = lander.getCenter();
     particlesFire.setCenter(newCenter.x, newCenter.y);
     particlesThrust.setCenter(newCenter.x, newCenter.y);
@@ -214,7 +291,6 @@ function(graphics, input, storage, audio, systems, renderer) {
       xFir += xRad + .5;
       xSec += xRad - .5;
     }
-    console.log('ROT', xFir.toFixed(2), xSec.toFixed(2));
     particlesThrust.setBounds({
       x: {
         first: -.5,
@@ -226,27 +302,31 @@ function(graphics, input, storage, audio, systems, renderer) {
       },
     });
     particlesThrust.update(elapsedTime);
+  }
+  // Update function
+  function update(elapsedTime) {
+    updateParticles(elapsedTime);
+    let shipX = lander.getCenter().x;
     // Check for out of bounds
     if (
-      lander.getCenter().x - buf <= 0 || lander.getCenter().x + buf >= canvas.width
+      shipX - buf <= 0 || shipX + buf >= canvas.width
       || lander.getCenter().y - buf <= 0 || lander.getCenter().y + buf >= canvas.height
     ) {
       youDied(elapsedTime);
     }
     // Check for landing on a stage 1
     else if (
-      lander.getCenter().x >= terrainData[1][0].hori
-      && lander.getCenter().x <= terrainData[1][1].hori
+      shipX >= terrainData[1][0].hori
+      && shipX <= terrainData[1][1].hori
       && lander.getCenter().y + buf >= terrainData[1][0].vert
       && allGreen()
     ) {
-      gameOver = true;
-      trumpet_sound.play();
+      youWin();
     }
     // Crash into stage 1
     else if (
-      lander.getCenter().x >= terrainData[1][0].hori
-      && lander.getCenter().x <= terrainData[1][1].hori
+      shipX >= terrainData[1][0].hori
+      && shipX <= terrainData[1][1].hori
       && lander.getCenter().y + buf >= terrainData[1][0].vert
       && !allGreen()
     ) {
@@ -254,21 +334,23 @@ function(graphics, input, storage, audio, systems, renderer) {
     }
     // Check for landing on a stage 2
     else if (
-      lander.getCenter().x >= terrainData[3][0].hori
-      && lander.getCenter().x <= terrainData[3][1].hori
+      shipX >= terrainData[3][0].hori
+      && shipX <= terrainData[3][1].hori
       && lander.getCenter().y + buf >= terrainData[3][0].vert
       && allGreen()
     ) {
-      gameOver = true;
-      trumpet_sound.play();
+      youWin();
     }
     // Crash into stage 2
     else if (
-      lander.getCenter().x >= terrainData[3][0].hori
-      && lander.getCenter().x <= terrainData[3][1].hori
+      shipX >= terrainData[3][0].hori
+      && shipX <= terrainData[3][1].hori
       && lander.getCenter().y + buf >= terrainData[3][0].vert
       && !allGreen()
     ) {
+      youDied(elapsedTime);
+    }
+    else if (crashedInMountain(shipX)) {
       youDied(elapsedTime);
     }
     if (!gameOver) {
@@ -341,6 +423,7 @@ function(graphics, input, storage, audio, systems, renderer) {
   function gameLoop(time) {
     if (!gameLoaded) {
       // initial game settup
+      curLevelDisplay.innerText = difficulty;
       generateTerrain();
       storage.reportScores();
       loadAudio();
@@ -348,11 +431,24 @@ function(graphics, input, storage, audio, systems, renderer) {
     }
     let elapsedTime = time - lastTimeStamp;
     lastTimeStamp = time;
-    processInput(elapsedTime);
-    update(elapsedTime);
-    render();
+    if (gameStartCountDown > 0) {
+      gameStartCountDown -= elapsedTime;
+      if (gameStartCountDown < 0) {
+        gameStartCountDown = 0;
+      }
+      countDownValDisplay.innerText = (gameStartCountDown / 1000).toFixed(1);
+    }
+    else {
+      countDownDisplay.hidden = true;
+      processInput(elapsedTime);
+      update(elapsedTime);
+      render();
+    }
     if (gameOverCountdown > 0) {
       requestAnimationFrame(gameLoop);
+    }
+    else {
+      return;
     }
   };
   // Create the keyboard input handler
